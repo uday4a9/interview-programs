@@ -121,10 +121,49 @@ int max(NODE *root)
 	}
 }
 
-int main()
+int search(NODE *root, int key)
+{ // search for the given key element, If key is not found
+  // return 0, else return 1
+    if(root != NULL)
+	{
+        if(root->info == key)
+		    return 1;
+	    else if(key < root->info )
+	        return search(root->left, key);
+        else
+	        return search(root->right, key);
+    }
+	return 0;
+}
+
+int maxdepth(NODE *root)
+{ // Find out the maxdepth of th egiven binary tree
+    if(root == NULL)
+	    return 0;
+    return 1 + MAX(maxdepth(root->left),maxdepth(root->right));
+}
+
+int isBST(NODE *root)
+{ // if the given tree is inordered(Always incresing) travesal and
+  // keep track of last visting node. Then we can come to know that
+  // whether tree follows binary search tree rule or not.
+    NODE *prev = NULL;
+    if(root != NULL)
+    {
+	    if( ! isBST(root->left))
+		    return 0;
+        if(prev != NULL && root->info < prev->info)
+		    return 0;
+        prev = root;
+		return isBST(root->right);
+    }
+	return 1;
+}
+
+int main(int argc, char **argv)
 {
     NODE *root = NULL,*tmp;
-	int N,i,ele;
+	int N, i, ele, key;
 
 	printf("Enter how many NODES you want to insert ? ");
 	scanf("%d",&N);
@@ -132,7 +171,7 @@ int main()
 	printf("Height of tree : %d \n",height(root));
 
 	for(i=0; i<N; i++)
-	{
+    {
 	    scanf("%d",&ele);
 		root = insert(root, ele);
     }
@@ -152,12 +191,34 @@ int main()
 	printf("Height of tree : %d \n",height(root));
 	printf("size of tree : %d \n",size(root));
 
-    root = NULL;
     if(root != NULL)
-	{ // upon the existence of the tree only execute min and max functions.
+    { // upon the existence of the tree only execute min and max functions.
 	    printf("MIN element in Binary tree : %d \n",min(root));
 	    printf("MAX element in Binary tree : %d \n",max(root));
     }
+
+	if(root != NULL && argc == 2)
+	{ // searching for the given key, upon the existence of tree
+	  // and if passes the only argv[1], other wise enable below
+	  // two lines (#if 1).
+#if 0
+        printf("Enter a key to search : ");
+	    scanf("%d", &key);
+#endif
+        key = atoi(argv[1]);
+	    if(search(root, key) == 1)
+		    puts("FOUND");
+        else
+		    puts("NOT FOUND");
+    }
+
+    // Max depth of the binary tree
+    printf("MAXDEPTH of the tree : %d\n",maxdepth(root));
+
+    if(isBST(root))
+	    puts("BST");
+    else
+	    puts("NOT BST");
 
     return 0;
 }

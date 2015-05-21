@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+
 typedef struct node NODE;
 
 struct node
@@ -14,7 +16,7 @@ struct node
 
 
 NODE* create_node(int ele)
-{
+{ // Create Node and returns the nodes address
     NODE *new;
 	new = malloc(sizeof(NODE));
 	assert(new != NULL);
@@ -25,7 +27,8 @@ NODE* create_node(int ele)
 }
 
 NODE *insert(NODE *root, int ele)
-{
+{ // Findout the exact position to insert in 
+  // given BST.
 	if(root == NULL)
 	{
 	    root = create_node(ele);
@@ -38,7 +41,7 @@ NODE *insert(NODE *root, int ele)
 }
 
 void inorder(NODE *root)
-{ // inorder 
+{ // inorder traversal : left -> NODE -> right
     if(root != NULL)
 	{
 	    inorder(root->left);
@@ -48,7 +51,7 @@ void inorder(NODE *root)
 }
 
 void preorder(NODE *root)
-{ // inorder 
+{ // preorder : NODE -> left -> right
     if(root != NULL)
 	{
 		printf(" %d ",root->info);
@@ -58,7 +61,7 @@ void preorder(NODE *root)
 }
 
 void postorder(NODE *root)
-{ // inorder 
+{ // postorder : left -> right -> NODE
     if(root != NULL)
 	{
 	    postorder(root->left);
@@ -67,27 +70,94 @@ void postorder(NODE *root)
 	}
 }
 
+int height(NODE *root)
+{ // Return the height of the binary tree
+    int left = 0, right = 0;
+    if (root == NULL)
+	    return 0;
+  // both the logics are same, but differs only in 
+  // length of the code
+#if 1
+    return 1 + MAX(height(root->left), height(root->right));
+#else
+    left = height(root->left);
+    right = height(root->right);
+	if(left > right)
+	    return 1 + left;
+    else
+	    return 1 + right;
+#endif
+}
+
+int size(NODE *root)
+{ // size of a binary tree counts total number of nodes
+  // in given tree
+    if(root == NULL)
+	    return 0;
+    return 1 + size(root->left) + size(root->right);
+}
+
+int min(NODE *root)
+{ // ttraverse till the end of the left most node of 
+  // given tree, returns the node info.
+    if(root != NULL)
+	{
+	    if(root->left != NULL)
+		    min(root->left);
+        else
+		    return root->info;
+	}
+}
+
+int max(NODE *root)
+{ // ttraverse till the end of the left most node of 
+  // given tree, returns the node info.
+    if(root != NULL)
+	{
+	    if(root->right!= NULL)
+		    max(root->right);
+        else
+		    return root->info;
+	}
+}
+
 int main()
 {
-    NODE *root = NULL;
+    NODE *root = NULL,*tmp;
 	int N,i,ele;
 
 	printf("Enter how many NODES you want to insert ? ");
 	scanf("%d",&N);
+
+	printf("Height of tree : %d \n",height(root));
 
 	for(i=0; i<N; i++)
 	{
 	    scanf("%d",&ele);
 		root = insert(root, ele);
     }
-	printf("Elements : ");
+
+	printf("Inorder Elements : ");
 	inorder(root);
 	puts("");
-	printf("Elements : ");
+
+	printf("Preorder Elements : ");
 	preorder(root);
 	puts("");
-	printf("Elements : ");
+
+	printf("Postorder Elements : ");
 	postorder(root);
 	puts("");
+
+	printf("Height of tree : %d \n",height(root));
+	printf("size of tree : %d \n",size(root));
+
+    root = NULL;
+    if(root != NULL)
+	{ // upon the existence of the tree only execute min and max functions.
+	    printf("MIN element in Binary tree : %d \n",min(root));
+	    printf("MAX element in Binary tree : %d \n",max(root));
+    }
+
     return 0;
 }

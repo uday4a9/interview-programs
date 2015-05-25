@@ -160,6 +160,49 @@ int isBST(NODE *root)
     return 1;
 }
 
+void printArray(int *pathArr, int pathlen)
+{ // print the pathlen of array elements
+    int i=0;
+    for(i=0; i<pathlen; i++)
+      printf(" %d => ",pathArr[i]);
+    puts("NULL");
+}
+
+void printPaths(NODE *root, int *pathArr, int pathlen)
+{ // Take the input paramters as root, path Array, and Path len 
+  // Once if tree taversal reaches to end, just print the 
+  // path array,pathlen as size.
+    
+    if(root == NULL)
+        return;
+    pathArr[pathlen++] = root->info;
+    if(root->left==NULL && root->right==NULL)
+        printArray(pathArr, pathlen);
+    printPaths(root->left, pathArr, pathlen);
+    printPaths(root->right, pathArr, pathlen);
+}
+
+int isSame(NODE *root1, NODE *root2)
+{ // check is corresponding nodes in a tree are equal or not
+  // it'll handle 3 conditions. if both are NULL, Both are 
+  // not NULL and either one is NULL. 
+  // on success returns 1, on failure returns 0
+    if(root1 == NULL && root2 == NULL)
+        return 1;
+    else if(root1 != NULL && root2 != NULL)
+        return root1->info == root2->info && \
+               isSame(root1->left, root2->left) && \
+	       isSame(root1->right, root2->right);
+    return 0;
+}
+
+int isMirrorImage(NODE *root1, *root2)
+{ // Check whether mirror images of given two trees
+  // are equal or not ?
+    
+
+}
+
 int main(int argc, char **argv)
 {
     NODE *root = NULL,*tmp;
@@ -215,10 +258,22 @@ int main(int argc, char **argv)
     // Max depth of the binary tree
     printf("MAXDEPTH of the tree : %d\n",maxdepth(root));
 
-    if(isBST(root)
+    if(isBST(root))
         puts("BST");
     else
         puts("NOT BST");
+
+    // Print paths of the given BST.
+    // Initially we don't know the pathlen, so pass it as zero.
+    int pathArr[20]; // change this size accordingly.
+    if(root)
+        printPaths(root, pathArr, 0);
+
+    NODE *root1 = root;
+    if(isSame(root,root1))
+        puts("BOTH TREES ARE SAME");
+    else
+        puts("BOTH TREES ARE NOT SAME");
 
     return 0;
 }

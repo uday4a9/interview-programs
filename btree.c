@@ -189,18 +189,23 @@ int isSame(NODE *root1, NODE *root2)
   // on success returns 1, on failure returns 0
     if(root1 == NULL && root2 == NULL)
         return 1;
-    else if(root1 != NULL && root2 != NULL)
+    if(root1 != NULL && root2 != NULL)
         return root1->info == root2->info && \
                isSame(root1->left, root2->left) && \
 	       isSame(root1->right, root2->right);
     return 0;
 }
 
-int isMirrorImage(NODE *root1, *root2)
+int isMirrorImage(NODE *root1, NODE *root2)
 { // Check whether mirror images of given two trees
   // are equal or not ?
-    
-
+    if(root1 == NULL && root2 == NULL)
+        return 1;
+    if(root1 == NULL || root2 == NULL)
+        return 0;
+    return root1->info == root2->info && \
+           isMirrorImage(root1->left, root2->right) && \
+           isMirrorImage(root1->right, root2->left);
 }
 
 int main(int argc, char **argv)
@@ -269,11 +274,15 @@ int main(int argc, char **argv)
     if(root)
         printPaths(root, pathArr, 0);
 
-    NODE *root1 = root;
+    NODE *root1 = NULL;
     if(isSame(root,root1))
         puts("BOTH TREES ARE SAME");
     else
         puts("BOTH TREES ARE NOT SAME");
 
+    if(isMirrorImage(root, root1))
+        puts("MIRROR IMAGES");
+    else
+        puts("NOT MIRROR IMAGES");
     return 0;
 }

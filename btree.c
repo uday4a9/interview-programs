@@ -77,10 +77,10 @@ void push(NODE **st, int *top, NODE *ele)
 { // Just insert an element into the stack
     if(*top == LIMIT-1)
     {
-        puts("STACK OVEFLOW");
+        puts("STACK OVERFLOW");
 	exit(1);
     }
-    st[(*top)++] = ele;
+    st[++(*top)] = ele;
 }
 
 NODE* pop(NODE **st, int *top)
@@ -108,14 +108,12 @@ void postorder_nrec(NODE *root)
     if(root ==  NULL)
         return;
 
-    push(stack1, &top1, root);
-    printf("1 top1 : %d top2 : %d \n",top1,top2); 
+    push(stack1, &top1, root);  // push an the elemnet into the stack
     while(! isempty(stack1,&top1) )
     {
-        tmp = pop(stack1, &top1);    
+        tmp = pop(stack1, &top1);   // pop out the element and push the corresponding
+	                           // left and right elements in another stack
         push(stack2, &top2, tmp);
-    printf("2 top1 : %d top2 : %d \n",top1,top2); 
-
 	if (tmp->left)
 	    push(stack1, &top1, tmp->left);
 	if (tmp->right)
@@ -127,7 +125,7 @@ void postorder_nrec(NODE *root)
         tmp = pop(stack2, &top2);
 	printf("%d => ",tmp->info);
     }
-    puts("NULL\n");
+    puts("NULL");
 }
 
 int height(NODE *root)
@@ -303,6 +301,13 @@ NODE* delete(NODE *root)
     return root;
 }
 
+int hasPathSum(NODE *root, int sum)
+{ // if the path have given sum returns non-zero else 
+  // returns zero.
+
+    
+}
+
 int main(int argc, char **argv)
 {
     NODE *root = NULL,*tmp;
@@ -386,6 +391,11 @@ int main(int argc, char **argv)
 
     printf("post order non recursive travel : ");
     postorder_nrec(root);
+
+    if(hasPathSum(root, 21))
+        puts("TRUE");
+    else
+        puts("FALSE");
 
     return 0;
 }

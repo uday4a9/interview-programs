@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
+#define LIMIT 30
 
 typedef struct node NODE;
 
@@ -14,6 +15,8 @@ struct node
     NODE *right;
 };
 
+NODE *stack1[LIMIT],*stack2[LIMIT];
+int top1=-1,top2=-1;
 
 NODE* create_node(int ele)
 { // Create Node and returns the nodes address
@@ -68,6 +71,63 @@ void postorder(NODE *root)
 	postorder(root->right);
 	printf(" %d ",root->info);
     }
+}
+
+void push(NODE **st, int *top, NODE *ele)
+{ // Just insert an element into the stack
+    if(*top == LIMIT-1)
+    {
+        puts("STACK OVEFLOW");
+	exit(1);
+    }
+    st[(*top)++] = ele;
+}
+
+NODE* pop(NODE **st, int *top)
+{ // removes the element from the stack
+    if(*top == -1)
+    {
+        puts("STACK UNDERFLOW");
+	exit(1);
+    }
+    return st[(*top)--];
+}
+
+int isempty(NODE **st, int *top)
+{
+    return ((*top)<0 ? 1 : 0);
+}
+
+void postorder_nrec(NODE *root)
+{ // create 2 stacks for keep track of the elements.
+  // one stack to keep track of elements, another stack 
+  // to hold the post order traversal of tree.
+    
+    NODE *tmp;
+
+    if(root ==  NULL)
+        return;
+
+    push(stack1, &top1, root);
+    printf("1 top1 : %d top2 : %d \n",top1,top2); 
+    while(! isempty(stack1,&top1) )
+    {
+        tmp = pop(stack1, &top1);    
+        push(stack2, &top2, tmp);
+    printf("2 top1 : %d top2 : %d \n",top1,top2); 
+
+	if (tmp->left)
+	    push(stack1, &top1, tmp->left);
+	if (tmp->right)
+	    push(stack1, &top1, tmp->right);
+    }
+
+    while(! isempty(stack2, &top2))
+    {
+        tmp = pop(stack2, &top2);
+	printf("%d => ",tmp->info);
+    }
+    puts("NULL\n");
 }
 
 int height(NODE *root)
@@ -208,6 +268,41 @@ int isMirrorImage(NODE *root1, NODE *root2)
            isMirrorImage(root1->right, root2->left);
 }
 
+int diameter(NODE *root)
+{ // Finding out the diameter of the given tree. diameter
+  // can be calulated as the no. of nodes between the end to end
+  // of the most legthy leaf nodes. Diameter doesn't mean to
+  // say to traverse through the root node always.
+  // so, better to findout the height of the left and subtrees 
+  // from a node, and diameters of the corresponding nodes.
+  // finding out the max aming two results the diameter of a Binary tree.
+
+    int lheight, rheight, ldiam, rdiam;
+    if(root == NULL)
+        return 0;
+    lheight = height(root->left);
+    rheight = height(root->right);
+
+    ldiam = diameter(root->left);
+    rdiam = diameter(root->right);
+
+    return MAX(lheight + rheight + 1, MAX(ldiam, rdiam));
+}
+
+NODE* delete(NODE *root)
+{ // This method traverse till the ends of binary tree
+  // and delete the reachable last node. By properly
+  // rearranging the links to NULL. At last this function
+  // has to return the NULL to the caller.
+    if(root == NULL)
+        return root;
+    root->left = delete(root->left);
+    root->right = delete(root->right);
+    free(root);
+    root = NULL;
+    return root;
+}
+
 int main(int argc, char **argv)
 {
     NODE *root = NULL,*tmp;
@@ -284,5 +379,13 @@ int main(int argc, char **argv)
         puts("MIRROR IMAGES");
     else
         puts("NOT MIRROR IMAGES");
+
+    printf("Diameter of given tree : %d \n",diameter(root));
+
+//    root = delete(root);
+
+    printf("post order non recursive travel : ");
+    postorder_nrec(root);
+
     return 0;
 }

@@ -155,6 +155,28 @@ int size(NODE *root)
     return 1 + size(root->left) + size(root->right);
 }
 
+int size_nrec(NODE *root)
+{ // find out whole number of elemnents with out recursion
+  // create a stack, while popping out keep track of count,
+  // same logic as like for post order non recursive level
+  // traversal.
+    NODE *tmp;
+    int count=0;
+    if(root == NULL)
+        return 0;
+    push(stack1, &top1, root);
+    while(! isempty(stack1, &top1))
+    {
+       tmp = pop(stack1, &top1); 
+       ++count;
+       if(tmp->left)
+           push(stack1, &top1, tmp->left);
+       if(tmp->right)
+           push(stack1, &top1, tmp->right);
+    }
+    return count;
+}
+
 int min(NODE *root)
 { // ttraverse till the end of the left most node of 
   // given tree, returns the node info.
@@ -304,8 +326,61 @@ NODE* delete(NODE *root)
 int hasPathSum(NODE *root, int sum)
 { // if the path have given sum returns non-zero else 
   // returns zero.
+    int bal;
+    if(root == NULL) 
+        return (sum == 0);
+    bal = sum - root->info;
+    return (hasPathSum(root->left, bal) || hasPathSum(root->right, bal));
+}
 
+NODE* findLCAutil(NODE *root, int first, int second, int *s1, int *s2)
+{ // find whether the given elements are there are not, 
+  // status will be mainitained in s1 and s2.
+    if(root == NULL)
+        return root;
+    if(root->info == first)
+    {
+        *s1 = 1;
+	return root;
+    }
+
+    if(root->info == second)
+    {
+        *s2 = 1;
+	return root;
+    }
+
+    NODE *leftLCA = findLCAutil(root->left, first, second, s1, s2);
+    NODE *rightLCA = findLCAutil(root->right, first, second, s1, s2);
+
+    if(leftLCA && rightLCA)
+        return root;
+    return (leftLCA!= NULL)? leftLCA: rightLCA;
+}
+
+int find(NODE *root, int number)
+{ //check whether given number is existed or not
+  // if existed return true else false
+    if(root == NULL)
+        return 0;
+    if(root->info==number || find(root->left, number) || find(root->right, number))
+        return 1;
+    return 0;
+}
+
+NODE* findLCA(NODE *root, int first, int second)
+{ // first we need to figure our whether the both given
+  // first and secodn numbers are present in Tree or not.
+  // If both numbers are present the try t findout LCA of both.
     
+    int s1=0, s2=0; // status of exitency, of both first and second
+
+    NODE *lca = findLCAutil(root, first, second, &s1, &s2);
+
+    if( (s1&&s2) || (s1 && find(lca,second)) || (s2 && find(lca, first)))
+        return lca;
+    
+    return NULL;
 }
 
 int main(int argc, char **argv)
@@ -392,10 +467,18 @@ int main(int argc, char **argv)
     printf("post order non recursive travel : ");
     postorder_nrec(root);
 
-    if(hasPathSum(root, 21))
+    if(hasPathSum(root, 11))
         puts("TRUE");
     else
         puts("FALSE");
 
+    tmp = findLCA(root, -1, 11);
+    if(tmp) 
+        printf("LCA IS : %d \n",tmp->info);
+    else
+        puts("given numbers are not existed");
+
+    top1 = -1; //make sure that stack is free
+    printf("Size of a tree in non-recursive : %d \n",size_nrec(root));
     return 0;
 }

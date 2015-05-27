@@ -383,6 +383,44 @@ NODE* findLCA(NODE *root, int first, int second)
     return NULL;
 }
 
+NODE* min_node(NODE *root)
+{ // find the min value containing node in the tree
+  // returns that min valyue node if possible, ele returns NULL
+    if(root == NULL)
+        return root;
+    while(root->left != NULL)
+        root = root->left;
+    return root;
+}
+
+NODE* successor(NODE *root, NODE *tmp)
+{ // Find out the successor of the tmp node in given root noded tree
+  // if tmp->right == NULL, find the min of it's right subtree
+  // else find the parent of the temp node. If it the last element
+  // of the tree inorder traversal then returns NULL
+    NODE *succ = NULL;
+    if(root == NULL || tmp==NULL)
+        return NULL;
+    if(tmp->right != NULL)
+        return min_node(tmp->right);
+    if(tmp->right == NULL)
+    {
+        while(1) {
+        if( tmp->info < root->info )
+	{ // if given node value less than root node value
+	  // then change successor to root node. move root
+	  // node to left side of tree.
+	    succ = root;
+            root = root->left;
+	}
+	else if(tmp->info > root->info)
+	    root = root->right; // move root node to it's right tree of node
+        else
+	    break; // if it reaches to the tmp node, just break
+    } }
+    return succ;
+}
+
 int main(int argc, char **argv)
 {
     NODE *root = NULL,*tmp;
@@ -478,7 +516,13 @@ int main(int argc, char **argv)
     else
         puts("given numbers are not existed");
 
-    top1 = -1; //make sure that stack is free
+    top1 = -1; //make sure that stack should not be contagious
     printf("Size of a tree in non-recursive : %d \n",size_nrec(root));
+
+    tmp = successor(root,root->right->right->right->right);
+    if(tmp)
+        printf("Successor is : %d \n",tmp->info);
+    else
+        puts("Given elent is the last element of the given tree inorder traversal or passed NULL");
     return 0;
 }

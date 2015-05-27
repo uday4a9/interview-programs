@@ -216,8 +216,23 @@ int search(NODE *root, int key)
     return 0;
 }
 
+NODE* search_node(NODE *root, int key)
+{ // find the node based on the given element in TREE.
+  // if element found return that node, else returnss NULL.
+    if(root != NULL)
+    {
+    if(root->info == key)
+        return root;
+    else if(key < root->info)
+        return search_node(root->left, key);
+    else 
+        return search_node(root->right, key);
+    }
+    return NULL;
+}
+
 int maxdepth(NODE *root)
-{ // Find out the maxdepth of th egiven binary tree
+{ // Find out the maxdepth of the given binary tree
     if(root == NULL)
         return 0;
     return 1 + MAX(maxdepth(root->left),maxdepth(root->right));
@@ -421,6 +436,46 @@ NODE* successor(NODE *root, NODE *tmp)
     return succ;
 }
 
+NODE* delete_node_from_tree(NODE *root, int key)
+{ // delete given element in node from the tree
+  // search the element and delete the node
+    NODE *tmp, *succ;
+    
+    if(root == NULL)
+    {
+        printf("Key not existed, not possible to delete.");
+	return;
+    }
+    if( key < root->info)
+        root->left = delete_node_from_tree(root->left, key);
+    else if( key > root->info)
+        root->right = delete_node_from_tree(root->right, key);
+    else
+    {
+        if(root->left!=NULL && root->right!=NULL)
+	{
+	    succ = root->right;
+	    while(succ->left) // finding out min elemnt in right subtree
+	        succ=succ->left;
+            root->info = succ->info;
+	    root->right = delete_node_from_tree(root->right, succ->info);
+	}
+	else
+	{
+	    tmp = root;
+	    if(root->left!= NULL)
+	        root = root->left;
+            else if(root->right != NULL)
+	        root = root->right;
+            else
+	        root = NULL;
+            free(tmp);
+	    tmp = NULL;
+	}
+    }
+    return root;
+}
+
 int main(int argc, char **argv)
 {
     NODE *root = NULL,*tmp;
@@ -524,5 +579,11 @@ int main(int argc, char **argv)
         printf("Successor is : %d \n",tmp->info);
     else
         puts("Given elent is the last element of the given tree inorder traversal or passed NULL");
+
+    root = delete_node_from_tree(root, atoi(argv[1]));    
+    printf("After delete : ");
+    inorder(root);
+    puts("");
+    
     return 0;
 }

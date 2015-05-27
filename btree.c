@@ -442,11 +442,8 @@ NODE* delete_node_from_tree(NODE *root, int key)
     NODE *tmp, *succ;
     
     if(root == NULL)
-    {
-        printf("Key not existed, not possible to delete.");
-	return;
-    }
-    if( key < root->info)
+	return NULL;
+    else if( key < root->info)
         root->left = delete_node_from_tree(root->left, key);
     else if( key > root->info)
         root->right = delete_node_from_tree(root->right, key);
@@ -455,7 +452,7 @@ NODE* delete_node_from_tree(NODE *root, int key)
         if(root->left!=NULL && root->right!=NULL)
 	{
 	    succ = root->right;
-	    while(succ->left) // finding out min elemnt in right subtree
+	    while(succ->left) // finding out min element in right subtree
 	        succ=succ->left;
             root->info = succ->info;
 	    root->right = delete_node_from_tree(root->right, succ->info);
@@ -574,16 +571,19 @@ int main(int argc, char **argv)
     top1 = -1; //make sure that stack should not be contagious
     printf("Size of a tree in non-recursive : %d \n",size_nrec(root));
 
-    tmp = successor(root,root->right->right->right->right);
+    tmp = successor(root,root->right);
     if(tmp)
         printf("Successor is : %d \n",tmp->info);
     else
         puts("Given elent is the last element of the given tree inorder traversal or passed NULL");
 
-    root = delete_node_from_tree(root, atoi(argv[1]));    
-    printf("After delete : ");
-    inorder(root);
-    puts("");
+    if(argc == 2) 
+    {
+        root = delete_node_from_tree(root, atoi(argv[1]));
+        printf("After delete : ");
+        inorder(root);
+        puts("");
+    }
     
     return 0;
 }

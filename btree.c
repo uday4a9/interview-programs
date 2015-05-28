@@ -473,6 +473,27 @@ NODE* delete_node_from_tree(NODE *root, int key)
     return root;
 }
 
+void mirror_image(NODE *root)
+{ // convert given tree to it's mirror image
+  // means left node should be right and vice versa
+    NODE *tmp;
+    if(root != NULL)
+    {
+        mirror_image(root->left);
+        mirror_image(root->right);
+	tmp = root->left;
+	root->left = root->right;
+	root->right = tmp;
+    }
+}
+
+int getlevelDiff(NODE *root)
+{ // the even and odd level difference
+    if(root == NULL)
+        return 0;
+    return root->info - getlevelDiff(root->left) -getlevelDiff(root->right);
+}
+
 int main(int argc, char **argv)
 {
     NODE *root = NULL,*tmp;
@@ -585,5 +606,16 @@ int main(int argc, char **argv)
         puts("");
     }
     
+    printf("Before Mirror Image :");
+    inorder(root);
+    puts("");
+    mirror_image(root);
+    printf("After Mirror Image :");
+    inorder(root);
+    puts("");
+
+    if(root != NULL)
+        printf("Level Order difference : %d \n",getlevelDiff(root));
+
     return 0;
 }

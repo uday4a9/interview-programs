@@ -491,7 +491,95 @@ int getlevelDiff(NODE *root)
 { // the even and odd level difference
     if(root == NULL)
         return 0;
-    return root->info - getlevelDiff(root->left) -getlevelDiff(root->right);
+    return root->info - getlevelDiff(root->left) - getlevelDiff(root->right);
+}
+
+void printTree(NODE *root, int key1, int key2)
+{ // print the elements in given range of key1, key2
+  // there are 2 conditions, 1. if key1<root->info
+  // traverse htrough left side of tree
+  // if not print the root element based on the limit.
+  // if key2 > root->info, then traverse throught the
+  // right subtree of the tree.
+    if(root == NULL)
+        return;
+
+    if (key1 < root->info)
+        printTree(root->left, key1, key2);
+
+    if( (key1 <= root->info) && (root->info <= key2))
+        printf(" %d ",root->info);
+
+    if(key2 > root->info)
+        printTree(root->right, key1, key2);
+}
+
+void printElementDist(NODE *root, int level)
+{ // print elements @ given distance from root
+  // or print given elements @ certain level.
+    if(root == NULL)
+        return;
+    if(level == 0)
+       printf(" %d ",root->info);
+    
+    printElementDist(root->left, level-1);
+    printElementDist(root->right, level-1);
+}
+
+int getLevel(NODE *root, int element, int level)
+{ //  get level corresponding to the given element
+  // in given BST.
+    if(root == NULL)
+        return 0;
+
+    if(root->info == element)
+        return level;
+    
+    int glevel = getLevel(root->left, element, level+1);
+    if(glevel != 0)
+        return level;
+    glevel = getLevel(root->right, element, level+1);
+
+    return glevel;
+}
+
+int sumTree(NODE *root)
+{ // tree leaf nodes will be 0, and higher level node
+  // value will be sum of it's left and right subtree.
+    if(root == NULL)
+        return 0;
+
+    // save the current root value in this variable
+    int cur = root->info;
+
+    // change the root->info to it's sum of both left and
+    // right nodes info 
+    root->info = sumTree(root->left) + sumTree(root->right);
+
+    // return the sum of root->data and old value to iit's 
+    // caller
+    return root->info + cur;
+}
+
+int sum(NODE *root)
+{
+    if(root == NULL)
+        return 0;
+    return sum(root->left) + root->info + sum(root->right);
+}
+
+int isSumTree(NODE *root)
+{ // if it is a sum tree returns 1 else 0.
+    int rs, ls;
+
+    ls = sum(root->left);
+    rs = sum(root->right);
+
+    if ( (root->info == ls+rs) &&
+         isSumTree(root->left) && 
+	 isSumTree(root->right) )
+	 return 1;
+    return 0;
 }
 
 int main(int argc, char **argv)
@@ -605,7 +693,7 @@ int main(int argc, char **argv)
         inorder(root);
         puts("");
     }
-    
+#if 0    
     printf("Before Mirror Image :");
     inorder(root);
     puts("");
@@ -613,9 +701,31 @@ int main(int argc, char **argv)
     printf("After Mirror Image :");
     inorder(root);
     puts("");
+#endif
 
     if(root != NULL)
         printf("Level Order difference : %d \n",getlevelDiff(root));
+
+    printf("Elements in given range : ");
+    printTree(root, -1, 5);
+    puts("");
+
+    printf("Elements @ given distance is : ");
+    printElementDist(root, 3);
+    puts("");
+
+    // By assuming level as 1, the last parameter in below
+    printf("Given Element at level : %d \n",getLevel(root, 9, 1));
+
+    // sumTree function performing..
+    inorder(root); puts("");
+    sumTree(root);
+    inorder(root); puts("");
+
+    if(isSumTree(root))
+        puts("It's a SUM Tree");
+    else
+        puts("It's not a SUM Tree");
 
     return 0;
 }

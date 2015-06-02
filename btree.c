@@ -582,6 +582,32 @@ int isSumTree(NODE *root)
     return 0;
 }
 
+int printAncestors(NODE *root, int target)
+{ // print all ancestors of a given node
+    if(root == NULL)
+        return 0;
+
+    if(root->info == target)
+        return 1;
+
+    if(printAncestors(root->left, target) ||
+       printAncestors(root->right, target))
+       {
+           printf(" %d ",root->info);
+	   return 1;
+       }
+    return 0;
+}
+
+int countLeaves(NODE *root)
+{ // count the leaves of given binary tree
+    if(root == NULL)
+        return 0;
+    if( root->left==NULL && root->right==NULL )
+        return 1;
+    return countLeaves(root->left) + countLeaves(root->right);
+}
+
 int main(int argc, char **argv)
 {
     NODE *root = NULL,*tmp;
@@ -717,6 +743,7 @@ int main(int argc, char **argv)
     // By assuming level as 1, the last parameter in below
     printf("Given Element at level : %d \n",getLevel(root, 9, 1));
 
+#if 0
     // sumTree function performing..
     inorder(root); puts("");
     sumTree(root);
@@ -726,6 +753,13 @@ int main(int argc, char **argv)
         puts("It's a SUM Tree");
     else
         puts("It's not a SUM Tree");
+#endif
+
+    printf("Ancestors of given node : ");
+    printAncestors(root, 10);
+    puts("");
+
+    printf("Total number of leaves in given tree : %d \n", countLeaves(root));
 
     return 0;
 }

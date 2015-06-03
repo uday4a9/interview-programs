@@ -16,7 +16,7 @@ struct node
 };
 
 NODE *stack1[LIMIT],*stack2[LIMIT];
-int top1=-1,top2=-1;
+int top1=-1, top2=-1;
 
 NODE* create_node(int ele)
 { // Create Node and returns the nodes address
@@ -96,6 +96,33 @@ NODE* pop(NODE **st, int *top)
 int isempty(NODE **st, int *top)
 {
     return ((*top)<0 ? 1 : 0);
+}
+
+void levelorder_nrec(NODE *root)
+{ // print elements in level order with non-recursive model.
+  // use queue data structure to display the elements.
+    NODE *tmp;
+
+    if(root == NULL) 
+       return;
+    push(stack1, &top1, root);  // push the root element into the stack
+    while(! isQempty(stack1,&top1) )
+    {
+        tmp = pop(stack1, &top1); //pop element and visit the corresponding
+	                          // left and right childs
+        printf(" %d ",tmp->info);
+	if(tmp->right)
+	    push(stack1, &top1, tmp->right);
+	if (tmp->left)
+	    push(stack1, &top1, tmp->left);
+    }
+}
+
+void levelorder_rec(NODE *root)
+{ // print elemets in level order with out using external stack.
+    if(root == NULL)
+        return;
+    //levelorder_rec(root->right);
 }
 
 void postorder_nrec(NODE *root)
@@ -760,6 +787,17 @@ int main(int argc, char **argv)
     puts("");
 
     printf("Total number of leaves in given tree : %d \n", countLeaves(root));
+
+    top1 = -1; // for safer side change, to make stack1 should clear
+    printf("Level order Elements non rec : ");
+    levelorder_nrec(root);
+    puts("");
+
+    top1 = -1, top2 = -1; // for safer side change, to make stack1 & stack2 
+                          // should clear
+    printf("Level order Elements non rec : ");
+    levelorder_rec(root);
+    puts("");
 
     return 0;
 }

@@ -677,6 +677,47 @@ void levelorder_nrec(NODE *root)
     }
 }
 
+void tree_leaves(NODE *root)
+{ // print only leaves of tree
+    if(root == NULL)
+        return;
+    if(root->left==NULL && root->right==NULL)
+        printf(" %d ",root->info);
+    tree_leaves(root->left);
+    tree_leaves(root->right);
+}
+
+void left_view(NODE *root, int level, int *old_level)
+{ // left view can be printed as level order traversal's 1st element
+  // or keep track of level changes and print the corresponding level
+  // changed element.
+    if(root == NULL)
+        return;
+    if(*old_level < level)
+    {
+        printf(" %d ",root->info);
+	*old_level = level;
+    }
+    left_view(root->left, level + 1, old_level);
+    left_view(root->right, level + 1, old_level);
+}
+
+void right_view(NODE *root, int level, int *old_level)
+{ // right view can be printed as level order traversal's last element
+  // or keep track of level changes and print the corresponding level
+  // changed element. so to print that item traverse from right to left.
+  // so, traverse first right and later left subtrees
+    if(root == NULL)
+        return;
+    if(*old_level < level)
+    {
+        printf(" %d ",root->info);
+	*old_level = level;
+    }
+    right_view(root->right, level + 1, old_level);
+    right_view(root->left, level + 1, old_level);
+}
+
 int main(int argc, char **argv)
 {
     NODE *root = NULL,*tmp;
@@ -837,9 +878,23 @@ int main(int argc, char **argv)
 
     top1 = -1, top2 = -1; // for safer side change, to make stack1 & stack2 
                           // should clear
-    printf("Level order Elements non rec : ");
+//    printf("Level order Elements rec : ");
 //    levelorder_rec(root);
+//    puts("");
+
+    printf("Leaves of Tree : ");
+    tree_leaves(root);
     puts("");
+
+    int max = 0;
+    printf("Left view of give tree : ");
+    left_view(root, 1, &max);
+    printf("With Height : %d \n",max);
+
+    max = 0;
+    printf("Right view of give tree : ");
+    right_view(root, 1, &max);
+    printf("With Height : %d \n",max);
 
     return 0;
 }

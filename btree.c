@@ -18,6 +18,9 @@ struct node
 NODE *stack1[LIMIT],*stack2[LIMIT];
 int top1=-1, top2=-1;
 
+NODE *queue[LIMIT];
+int front=-1, rear=-1;
+
 NODE* create_node(int ele)
 { // Create Node and returns the nodes address
     NODE *new;
@@ -96,26 +99,6 @@ NODE* pop(NODE **st, int *top)
 int isempty(NODE **st, int *top)
 {
     return ((*top)<0 ? 1 : 0);
-}
-
-void levelorder_nrec(NODE *root)
-{ // print elements in level order with non-recursive model.
-  // use queue data structure to display the elements.
-    NODE *tmp;
-
-    if(root == NULL) 
-       return;
-    push(stack1, &top1, root);  // push the root element into the stack
-    while(! isQempty(stack1,&top1) )
-    {
-        tmp = pop(stack1, &top1); //pop element and visit the corresponding
-	                          // left and right childs
-        printf(" %d ",tmp->info);
-	if(tmp->right)
-	    push(stack1, &top1, tmp->right);
-	if (tmp->left)
-	    push(stack1, &top1, tmp->left);
-    }
 }
 
 void levelorder_rec(NODE *root)
@@ -635,6 +618,65 @@ int countLeaves(NODE *root)
     return countLeaves(root->left) + countLeaves(root->right);
 }
 
+int isQempty(NODE **queue, int *front, int *rear)
+{ // check whwther given queue is empty or not 
+    if(*front == -1 || *front <= *rear)
+        return 0;
+    return 1;
+}
+
+int isQfull(NODE **queue, int *front, int *rear)
+{ // check whther given Queue is full or not
+    if(*rear == LIMIT-1)
+        return 1;
+    return 0;
+}
+
+void insertQ(NODE **queue, int *front, int *rear, NODE *tmp)
+{ // check whether quesu is full or not. If it is not full
+  // push the given item into queue.
+    if( isQfull(queue, front, rear) )
+    {
+        printf("QUEUE OVER FLOW\n");
+	return;
+    }
+    queue[++*rear] = tmp; 
+    if(*front == -1)
+        ++*front;
+}
+
+NODE* deleteQ(NODE **queue, int *front, int *rear)
+{ // Deleting the element from front end, If it is empty
+  // returns 
+    NODE *tmp=NULL; 
+
+    if( isQempty(queue, front, rear) )
+    {
+        printf("QUEUE UNDERFLOW\n");
+	return tmp;
+    }
+    return queue[(*front)++];
+}
+
+void levelorder_nrec(NODE *root)
+{ // print elements in level order with non-recursive model.
+  // use queue data structure to display the elements.
+    NODE *tmp;
+
+    if(root == NULL) 
+       return;
+    insertQ(queue, &front, &rear, root);
+    while(! isQempty(queue, &front, &rear) )
+    {
+        tmp = deleteQ(queue, &front, &rear); 
+        printf(" %d ",tmp->info);
+	if(tmp->left)
+            insertQ(queue, &front, &rear, tmp->left);
+	if (tmp->right)
+            insertQ(queue, &front, &rear, tmp->right);
+    }
+}
+
 int main(int argc, char **argv)
 {
     NODE *root = NULL,*tmp;
@@ -788,7 +830,7 @@ int main(int argc, char **argv)
 
     printf("Total number of leaves in given tree : %d \n", countLeaves(root));
 
-    top1 = -1; // for safer side change, to make stack1 should clear
+    front = rear = -1; // for safer side change, to make stack1 should clear
     printf("Level order Elements non rec : ");
     levelorder_nrec(root);
     puts("");
@@ -796,7 +838,7 @@ int main(int argc, char **argv)
     top1 = -1, top2 = -1; // for safer side change, to make stack1 & stack2 
                           // should clear
     printf("Level order Elements non rec : ");
-    levelorder_rec(root);
+//    levelorder_rec(root);
     puts("");
 
     return 0;

@@ -65,7 +65,7 @@ void insert_at_any_pos(NODE **front, int info, int pos)
     NODE *nn, *nxt, *prv;
     int i=0;
 
-    if(pos < 1)
+    if(pos < 1) // check given position is valid or not
     {
         puts("zero or -ve pos not allowed");
 	return;
@@ -74,13 +74,13 @@ void insert_at_any_pos(NODE **front, int info, int pos)
     nn = create_node(info);
 
     if( *front==NULL && pos==1)
-    {
+    { // list is not there, and given pos is 1
         *front = nn;
 	return;
     }
 
     if(pos == 1)
-    {
+    { // list is there, and position is 1
 	nn->next = *front;
 	*front = nn;
 	return;
@@ -160,6 +160,58 @@ void delete_at_end(NODE **front)
     cur = NULL;
 }
 
+void delete_at_any_pos(NODE **front, int pos)
+{
+    NODE *cur, *prv ;
+    int i=0;
+
+    if(*front == NULL)
+    {
+        puts("List empty, Nothing to delete");
+	return;
+    }
+
+    if(pos < 1)
+    {
+        puts("Zero or -ve postions not allowed");
+	return;
+    }
+
+    if( (*front)->next==NULL && pos==1 )
+    {
+        free(*front);
+	*front = NULL;
+	return;
+    }
+
+    if(pos == 1)
+    {
+        cur = *front;
+	(*front) = (*front)->next;
+	cur->next = NULL;
+	free(cur);
+	cur = NULL;
+	return;
+    }
+
+    cur = *front;
+    while(i < pos-1)
+    {
+        prv = cur;
+	cur = cur->next;
+	if(cur == NULL)
+	{
+	    puts("Not possible, Beyond the List Position");
+	    return;
+	}
+        ++i;
+    }
+    prv->next = cur->next;
+    cur->next = NULL;
+    free(cur);
+    cur = NULL;
+}
+
 void search(NODE *front, int key)
 {
     NODE *tmp;
@@ -191,6 +243,25 @@ void reverse_nrec(NODE **front)
     *front = prv;
 }
 
+void reverse_rec(NODE **front)
+{ // Recursive method to reverse the list
+    NODE *prv, *nxt;
+
+    if(*front == NULL)
+        return;
+
+    prv = *front;
+    nxt = prv->next;
+
+    if(nxt == NULL)
+        return;
+
+    reverse_rec(&nxt);
+    prv->next->next = prv;
+    prv->next = NULL;
+    *front = nxt;
+}
+
 void display(NODE *front)
 {
     while(front != NULL)
@@ -214,6 +285,9 @@ int main()
     display(front);
 
     insert_at_any_pos(&front, 45, 1);
+    display(front);
+
+    insert_at_end(&front, 56);
     display(front);
 
 #if 0
@@ -261,7 +335,29 @@ int main()
 
     reverse_nrec(&front);
     display(front);
+
+    delete_at_any_pos(&front, 5);
+    delete_at_any_pos(&front, 0);
+    delete_at_any_pos(&front, -1);
+
+    delete_at_any_pos(&front, 2);
+    display(front);
+
+    delete_at_any_pos(&front, 1);
+    display(front);
+
+    delete_at_any_pos(&front, 1);
+    display(front);
+
+    delete_at_any_pos(&front, 1);
+    display(front);
+
+    delete_at_any_pos(&front, 1);
+    display(front);
 #endif
 
+    reverse_rec(&front);
+
+    display(front);
     return 0;
 }

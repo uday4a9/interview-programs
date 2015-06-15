@@ -272,22 +272,39 @@ void display(NODE *front)
     puts("NULL");
 }
 
+int is_palindrome(NODE **front, NODE *last)
+{
+    if(last == NULL)
+        return 1;
+
+    int i = is_palindrome(front, last->next);
+
+    if (i ==0)
+        return 0;
+
+    int j = ((*front)->info == last->info);
+
+    (*front) = (*front)->next;
+
+    return j;
+}
+
 int main()
 {
     NODE *front = NULL;
 
     display(front);  // List is empty
 
-    insert_at_any_pos(&front, 23, 1);
+    insert_at_any_pos(&front, 22, 1);
     display(front);
 
-    insert_at_any_pos(&front, 34, 2);
+    insert_at_any_pos(&front, 23, 2);
     display(front);
 
-    insert_at_any_pos(&front, 45, 1);
+    insert_at_any_pos(&front, 12, 1);
     display(front);
 
-    insert_at_end(&front, 56);
+    insert_at_end(&front, 12);
     display(front);
 
 #if 0
@@ -354,10 +371,17 @@ int main()
 
     delete_at_any_pos(&front, 1);
     display(front);
-#endif
 
     reverse_rec(&front);
+#endif
+    NODE *tmp = front; //preserve the front pointer address
+    if ( is_palindrome(&front, front) )
+        puts("IT'S PALINDROME");
+    else
+        puts("IT'S NOT PALINDROME");
+    front = tmp;
 
     display(front);
+
     return 0;
 }

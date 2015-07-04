@@ -22,7 +22,7 @@ NODE *queue[LIMIT];
 int front=-1, rear=-1;
 
 NODE* create_node(int ele)
-{ // Create Node and returns the nodes address
+{ // Create Node and returns the node address
     NODE *new;
     new = malloc(sizeof(NODE));
     assert(new != NULL);
@@ -231,12 +231,12 @@ NODE* search_node(NODE *root, int key)
   // if element found return that node, else returnss NULL.
     if(root != NULL)
     {
-    if(root->info == key)
-        return root;
-    else if(key < root->info)
-        return search_node(root->left, key);
-    else 
-        return search_node(root->right, key);
+        if(root->info == key)
+            return root;
+        else if(key < root->info)
+            return search_node(root->left, key);
+        else 
+            return search_node(root->right, key);
     }
     return NULL;
 }
@@ -316,7 +316,7 @@ int isMirrorImage(NODE *root1, NODE *root2)
 int diameter(NODE *root)
 { // Finding out the diameter of the given tree. diameter
   // can be calulated as the no. of nodes between the end to end
-  // of the most legthy leaf nodes. Diameter doesn't mean to
+  // of the most lengthy leaf nodes. Diameter doesn't mean to
   // say to traverse through the root node always.
   // so, better to findout the height of the left and subtrees 
   // from a node, and diameters of the corresponding nodes.
@@ -395,7 +395,7 @@ int find(NODE *root, int number)
 
 NODE* findLCA(NODE *root, int first, int second)
 { // first we need to figure our whether the both given
-  // first and secodn numbers are present in Tree or not.
+  // first and second numbers are present in Tree or not.
   // If both numbers are present the try t findout LCA of both.
     
     int s1=0, s2=0; // status of exitency, of both first and second
@@ -410,7 +410,7 @@ NODE* findLCA(NODE *root, int first, int second)
 
 NODE* min_node(NODE *root)
 { // find the min value containing node in the tree
-  // returns that min valyue node if possible, ele returns NULL
+  // returns that min valyue node if possible, else returns NULL
     if(root == NULL)
         return root;
     while(root->left != NULL)
@@ -430,19 +430,21 @@ NODE* successor(NODE *root, NODE *tmp)
         return min_node(tmp->right);
     if(tmp->right == NULL)
     {
-        while(1) {
-        if( tmp->info < root->info )
-	{ // if given node value less than root node value
-	  // then change successor to root node. move root
-	  // node to left side of tree.
-	    succ = root;
-            root = root->left;
-	}
-	else if(tmp->info > root->info)
-	    root = root->right; // move root node to it's right tree of node
-        else
-	    break; // if it reaches to the tmp node, just break
-    } }
+        while(1) 
+	{
+            if( tmp->info < root->info )
+	    { // if given node value less than root node value
+	      // then change successor to root node. move root
+	      // node to left side of tree.
+	        succ = root;
+                root = root->left;
+	    }
+	    else if(tmp->info > root->info)
+	        root = root->right; // move root node to it's right tree of node
+            else
+	        break; // if it reaches to the tmp node, just break
+        }
+    }
     return succ;
 }
 
@@ -470,7 +472,7 @@ NODE* delete_node_from_tree(NODE *root, int key)
 	else
 	{
 	    tmp = root;
-	    if(root->left!= NULL)
+	    if(root->left != NULL)
 	        root = root->left;
             else if(root->right != NULL)
 	        root = root->right;
@@ -520,7 +522,7 @@ void printTree(NODE *root, int key1, int key2)
     if( (key1 <= root->info) && (root->info <= key2))
         printf(" %d ",root->info);
 
-    if(key2 > root->info)
+    if (key2 > root->info)
         printTree(root->right, key1, key2);
 }
 
@@ -718,6 +720,22 @@ void right_view(NODE *root, int level, int *old_level)
     right_view(root->left, level + 1, old_level);
 }
 
+void levelnline(NODE *root)
+{ // print level number and corresponding line number
+    int height, i;
+    
+    height = maxdepth(root);
+
+    puts("*** LEVELNLINE ***");
+    for(i=0; i<height; i++)
+    {
+        printf("level %d : ",i);
+	printElementDist(root, i);
+	printf("\n");
+    }
+    puts("*** LEVELNLINE ***");
+}
+
 int main(int argc, char **argv)
 {
     NODE *root = NULL,*tmp;
@@ -895,6 +913,8 @@ int main(int argc, char **argv)
     printf("Right view of give tree : ");
     right_view(root, 1, &max);
     printf("With Height : %d \n",max);
+
+    levelnline(root);
 
     return 0;
 }

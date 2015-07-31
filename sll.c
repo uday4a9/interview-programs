@@ -20,7 +20,7 @@ NODE* create_node(int info)
     assert(new != NULL);
 
     new->info = info;
-    new->next != NULL;
+    new->next = NULL;
     return new;
 }
 
